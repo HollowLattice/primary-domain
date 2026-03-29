@@ -1,76 +1,113 @@
-# Hollow Lattice — Site Setup Guide
+# Hollow Lattice
 
-## Your files
+Full-stack Next.js application deployed on Vercel.
+
+## Project Structure
+
 ```
-index.html     ← Main landing page (hero + services + contact)
-privacy.html   ← Privacy policy (required for App Store & Google Play)
-CNAME          ← Tells GitHub Pages to use your custom domain
+hollowlattice/
+├── app/
+│   ├── api/
+│   │   ├── hello/route.ts      ← Example API endpoint
+│   │   └── contact/route.ts    ← Contact form handler
+│   ├── privacy/page.tsx        ← Privacy policy (for app stores)
+│   ├── globals.css             ← All styles
+│   ├── layout.tsx              ← Root layout with fonts & metadata
+│   └── page.tsx                ← Homepage
+├── components/
+│   ├── Nav.tsx                 ← Navigation bar
+│   ├── Footer.tsx              ← Site footer
+│   └── ContactForm.tsx         ← Contact form (client component)
+├── public/                     ← Static assets (put images, favicon here)
+├── .env.example                ← Environment variable template
+├── .gitignore
+├── next.config.js
+├── package.json
+└── tsconfig.json
 ```
 
-## Step-by-step: GitHub Pages + hollowlattice.net
+## Getting Started Locally
 
-### 1. Create a GitHub account (if you don't have one)
-Go to https://github.com and sign up.
+```bash
+# 1. Install dependencies
+npm install
 
-### 2. Create a new repository
-- Click the **+** button → **New repository**
-- Name it anything (e.g., `hollowlattice-site` or `hollowlattice.github.io`)
-- Set it to **Public**
-- Click **Create repository**
+# 2. Copy env template
+cp .env.example .env.local
 
-### 3. Upload your files
-- On the repo page, click **"uploading an existing file"** (or drag and drop)
-- Upload `index.html`, `privacy.html`, and `CNAME`
-- Click **Commit changes**
+# 3. Run dev server
+npm run dev
 
-### 4. Enable GitHub Pages
-- Go to **Settings** → **Pages** (left sidebar)
-- Under "Source", select **Deploy from a branch**
-- Branch: **main**, Folder: **/ (root)**
-- Click **Save**
+# 4. Open http://localhost:3000
+```
 
-### 5. Configure your Porkbun DNS
-Log into Porkbun → **Domain Management** → click **DNS** next to hollowlattice.net.
+## Deploy to Vercel
 
-**Delete any existing A or CNAME records for the root domain**, then add these:
+### First-time setup
 
-| Type  | Host | Answer                 |
-|-------|------|------------------------|
-| A     |      | 185.199.108.153        |
-| A     |      | 185.199.109.153        |
-| A     |      | 185.199.110.153        |
-| A     |      | 185.199.111.153        |
-| CNAME | www  | YOUR-USERNAME.github.io |
+1. Push this repo to GitHub
+2. Go to https://vercel.com and sign in with GitHub
+3. Click "Add New Project" → import your repo
+4. Vercel auto-detects Next.js — just click "Deploy"
+5. Your site is live at `your-project.vercel.app` in about 60 seconds
 
-(Replace YOUR-USERNAME with your actual GitHub username)
+### Connect your custom domain
 
-The "Host" field for the A records should be blank (or `@` depending on how Porkbun displays it — it means the root domain).
+1. In Vercel Dashboard → your project → Settings → Domains
+2. Add `hollowlattice.com`
+3. Vercel will give you DNS records to add in Porkbun
+4. Update your Porkbun DNS:
+   - Delete the old GitHub Pages A records
+   - Add a CNAME record: host=`@`, answer=`cname.vercel-dns.com`
+   - Update www CNAME: host=`www`, answer=`cname.vercel-dns.com`
+5. Vercel handles SSL automatically
 
-### 6. Set custom domain in GitHub
-- Back in repo **Settings** → **Pages**
-- Under "Custom domain", type `hollowlattice.net`
-- Click **Save**
-- Check **"Enforce HTTPS"** once the DNS check passes (may take a few minutes to an hour)
+### Environment variables
 
-### 7. Wait for DNS propagation
-It usually takes 5–30 minutes, but can take up to 24 hours. You can check progress at https://dnschecker.org
+Add any secrets (API keys, database URLs) in:
+- Vercel Dashboard → Settings → Environment Variables (for production)
+- `.env.local` file (for local development, never commit this)
 
----
+## Adding New API Routes
 
-## Done! Your site will be live at:
-- **https://hollowlattice.net**
-- **https://www.hollowlattice.net**
-- **https://hollowlattice.net/privacy.html** ← this is the URL you'll give Apple & Google
+Create a new folder in `app/api/` with a `route.ts` file:
 
----
+```
+app/api/your-endpoint/route.ts
+```
 
-## Editing your site later
-1. Edit the HTML files locally
-2. Push changes to GitHub (or edit directly on github.com)
-3. Changes go live automatically in ~1 minute
+```typescript
+import { NextRequest, NextResponse } from "next/server";
 
-## Things to customize
-- **Company name**: search and replace "Hollow Lattice" if you want a different name
-- **Email**: replace `hello@hollowlattice.net` with your actual contact email
-- **Services**: update the 3 service cards in index.html to match your actual offerings
-- **Privacy policy**: update once you know exactly what data your apps collect
+export async function GET() {
+  return NextResponse.json({ data: "your response" });
+}
+
+export async function POST(req: NextRequest) {
+  const body = await req.json();
+  // process the request
+  return NextResponse.json({ success: true });
+}
+```
+
+These become serverless functions on Vercel automatically:
+- `GET /api/your-endpoint`
+- `POST /api/your-endpoint`
+
+## Adding New Pages
+
+Create a new folder in `app/` with a `page.tsx` file:
+
+```
+app/about/page.tsx     → hollowlattice.com/about
+app/blog/page.tsx      → hollowlattice.com/blog
+app/apps/page.tsx      → hollowlattice.com/apps
+```
+
+## Next Steps
+
+- [ ] Set up email forwarding (hello@hollowlattice.com) via Porkbun or Google Workspace
+- [ ] Wire up contact form to Resend or SendGrid (see comments in api/contact/route.ts)
+- [ ] Add a database (Supabase free tier is great to start)
+- [ ] Register Apple Developer + Google Play accounts
+- [ ] Build your first app!
