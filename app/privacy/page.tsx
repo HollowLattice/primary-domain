@@ -1,9 +1,17 @@
-import type { Metadata } from "next";
+"use client";
+
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
+import { motion } from "framer-motion";
 
-export const metadata: Metadata = {
-  title: "Privacy Policy — Hollow Lattice",
+const fadeUp = {
+  hidden: { opacity: 0, y: 24, filter: "blur(4px)" },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.6, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] },
+  }),
 };
 
 export default function Privacy() {
@@ -11,15 +19,30 @@ export default function Privacy() {
     <>
       <Nav />
 
-      <main className="max-w-[700px] mx-auto px-6 pt-32 pb-24">
-        <div className="mb-12 pb-8 border-b border-border">
+      <main className="max-w-[680px] mx-auto px-6 pt-40 pb-24">
+        <motion.div
+          className="mb-12 pb-8 border-b border-border"
+          initial="hidden"
+          animate="visible"
+          variants={fadeUp}
+          custom={0}
+        >
+          <p className="text-xs font-semibold tracking-[0.15em] uppercase text-accent mb-4">
+            Legal
+          </p>
           <h1 className="font-display font-normal text-4xl tracking-tight text-ink mb-3">
             Privacy Policy
           </h1>
           <p className="text-sm text-ink-faint">Effective date: March 28, 2026</p>
-        </div>
+        </motion.div>
 
-        <div className="space-y-0 [&>h2]:text-base [&>h2]:font-semibold [&>h2]:text-ink [&>h2]:mt-10 [&>h2]:mb-3 [&>p]:text-[0.95rem] [&>p]:text-ink-light [&>p]:leading-7 [&>p]:mb-3 [&>ul]:pl-5 [&>ul]:mb-3 [&>ul]:space-y-1.5 [&_li]:text-[0.95rem] [&_li]:text-ink-light [&_li]:leading-7 [&_a]:text-ink [&_a]:underline [&_a]:underline-offset-2 [&_a]:transition-colors hover:[&_a]:text-accent">
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={fadeUp}
+          custom={1}
+          className="space-y-0 [&>h2]:text-base [&>h2]:font-semibold [&>h2]:text-ink [&>h2]:mt-10 [&>h2]:mb-3 [&>p]:text-[0.95rem] [&>p]:text-ink-light [&>p]:leading-7 [&>p]:mb-3 [&>ul]:pl-5 [&>ul]:mb-3 [&>ul]:space-y-2 [&>ul]:list-disc [&_li]:text-[0.95rem] [&_li]:text-ink-light [&_li]:leading-7 [&_a]:text-accent [&_a]:font-medium [&_a]:no-underline [&_a]:transition-colors hover:[&_a]:text-accent-dark"
+        >
           <p>
             Hollow Lattice LLC (&ldquo;we,&rdquo; &ldquo;our,&rdquo; or
             &ldquo;us&rdquo;) operates mobile applications and web-based
@@ -130,7 +153,7 @@ export default function Privacy() {
             <br />
             <a href="mailto:hello@hollowlattice.com">hello@hollowlattice.com</a>
           </p>
-        </div>
+        </motion.div>
       </main>
 
       <Footer />
